@@ -1,21 +1,50 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, {useState} from 'react';
+import { StyleSheet, View, FlatList } from 'react-native';
+import { Form } from './src/Form';
+import { NavBar } from './src/NavBar';
+import { Item } from './src/Item';
 
 export default function App() {
+  const [listItems, setListItems] = useState([])
+
+  const list = () => {
+    if (listItems.length !== 0) {
+      return true
+    } else {return false}
+  }
+
+  const addItem = title => {
+    setListItems(prev => [
+      ...prev,
+      {
+        id: Date.now().toString(),
+        title
+      }
+    ])
+  }
+
+  const removeItem = id => {
+    setListItems(prev => prev.filter(item => item.id !== id))
+  }
+
+  const removeListItems = () => {
+    setListItems([])
+  }
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+      <NavBar list={list()} onRemoveListItems={removeListItems} />
+      <Form onSubmit={addItem} />
+      <FlatList
+        keyExtractor={item => item.id} 
+        data={listItems}
+        renderItem={({ item }) => <Item title={item} onRemove={removeItem} />}
+        />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+    container: {
+      marginBottom: 130
+    }
 });
